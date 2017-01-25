@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>pure webgl demo</title>
+</head>
+<body>
+<div style="display:inline-block; background: black; position:relative;">
+    <img style="display:none;" id="texImg" src="res/navico.png">
+    <canvas id="gameCanvas" width="500" height="500"></canvas>
+</div>
+
+<!-- 頂点シェーダ -->
+<script id="vtxshader" type="x-shader/x-vertex">
+  attribute vec3 aPos;
+  attribute vec4 aColor;
+  attribute vec2 aTex;
+  uniform mat4 uWVP;
+
+  varying vec4 vColor;
+  varying vec2 vTex;
+
+  void main(void) {
+    vColor = aColor;
+    vTex = aTex;
+
+    //行列 x 頂点 = 変換された頂点(ローカル座標)
+    //ローカル座標 x ワールド変換行列
+    vec4 outPos = vec4(aPos, 1.0) * uWVP;
+    //ビューポート変換、スクリーン座標変換
+    gl_Position = outPos / outPos.w;
+  }
+</script>
+<!-- フラグメントシェーダ -->
+<script id="frgshader" type="x-shader/x-fragment">
+  precision mediump float;
+
+  uniform sampler2D uTex;
+
+  varying vec4 vColor;
+  varying vec2 vTex;
+
+  void main(void) {
+    vec4 smpColor = texture2D(uTex, vTex);
+    gl_FragColor = vColor * smpColor;
+  }
+</script>
+<script src="main.js"></script>
+</body>
+</html>
